@@ -9,7 +9,7 @@ import numpy as np
 import pygame as pg
 import time
 
-class othello : 
+class Othello : 
     def __init__(self):
         self.gameBoard = np.zeros((8,8))
         self.gameBoard[3,3] = 1
@@ -54,34 +54,60 @@ class othello :
             self.gameBoard[position[0]-diff[0]/2, position[1] - diff[1]/2] = self.player
                 
             
-    def showGameBoard(self):
+    def showConsoleGameBoard(self):
         print("0 | 1 | 2 | 3 | 4 | 5 | 6 | 7")
         print("_______________________________")
         for i in range(8):
             print(" "+str(i)+" | "+" | ".join(["O" if value == -1 else 'X' if value == 1 else " " for value in self.gameBoard[i,:]]))
             print("_______________________________")
     
-    def play(self):
-            
-        pg.init()
+    def showPyGameGameBoard(self):
+
+
         background = pg.display.set_mode((540 ,540))
-        clock = pg.time.Clock()
-        running = True
-        dt = 0
         background.fill("grey")
         pg.draw.rect(background, (0,102,0), (30,30,480,480))
 
-        
         for i in range(30, 511, 60):
             pg.draw.line(background , (255, 255, 255), (30, i), (510, i))
             pg.draw.line(background , (255, 255, 255), (i, 30), (i, 510))
             pg.display.flip()
-        
+
+        for i in range(8):
+            for j in range(8):
+                a = self.gameBoard[i, j] 
+
+                if a == 1 : color = (0,0,0)
+                else : color = (255,255,255)
+
+                piece = Piece(color, (60*i, 60*j))
+                background.blit(piece.surf, piece.rect)
+
+
+
+
+    def play(self):
+
+        pg.init()
+        running = True
+        clock = pg.time.Clock()
+        dt = 0
+        self.showPyGameGameBoard()
+
         while running:
             
+            
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
+                elif event.type == pg.MOUSEBUTTONUP:
+                    position = pg.mouse.get_pos()
+
+                    if self.positionValid(position):
+                        self.updateGameBoard(position)
+                        self.showPyGameGameBoard()
+
         pg.quit()
             
                 
@@ -99,7 +125,19 @@ class othello :
                 
             # self.updateGameBoard(position)
             
-            # self.player *= -1 
+            # self.player *= -1
+
+class  Piece(pg.sprite.Sprite):
+    def __init__(self, color, position):
+        super(Piece, self).__init__()
+
+        self.x = position[0]
+        self.y = position[1]
+
+        self.surf = pg.Surface((60,60))
+        self.surf.fill((0,102,0))
+        pg.draw.circle(self.surf, color, (30,30), 20)
+        self.rect = self.surf.get_rect(topleft = (self.x, self.y))
             
 def timer(fonction):
     def inner(*param, **param2):
@@ -110,7 +148,7 @@ def timer(fonction):
     return inner
         
 
-game = othello()
+game = Othello()
 game.play()       
         
         
