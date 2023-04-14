@@ -9,7 +9,7 @@ class ConsolePlayer(Player):
         
         while True:
 
-            positionStr = input("Entrez la position où placer le pion")
+            positionStr = input("Entrez la position où placer le pion  ex : A3")
 
             try:
                 validatePositionStr(positionStr)
