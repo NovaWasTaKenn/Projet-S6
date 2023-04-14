@@ -47,3 +47,15 @@ class PyGameRenderer(Renderer):
                         self.background.blit(piece.surf, piece.rect)
 
             pg.display.flip()
+
+class  Piece(pg.sprite.Sprite):
+    def __init__(self, color, position):
+        super(Piece, self).__init__()
+
+        self.x = position[0]
+        self.y = position[1]
+
+        self.surf = pg.Surface((50,50))
+        self.surf.fill((0,102,0))
+        pg.draw.circle(self.surf, color, (25,25), 20)
+        self.rect = self.surf.get_rect(topleft = (self.x, self.y))

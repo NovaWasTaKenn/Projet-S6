@@ -40,5 +40,10 @@ def validateGrid(grid: Grid):
     raise InvalidGrid
 
 def validatePositionStr(position : str):
-     if len(re.findall("^[0-9],[0-9]$", position)) == 0 : return True
-     raise ValueError("Veuillez saisir la position sous le format : i,j ")
+    if len(re.findall("^[abcdefghABCDEFGH][1-8]$", position)) == 0 : return True
+    raise ValueError("Veuillez saisir la position sous le format : i,j ")
+
+def validatePosition(position : tuple[int, int]):
+    if position[0] < 8 and position[0] >= 0 and position[1] < 8 and position[1] >= 0: return True
+    raise ValueError("La position n'est pas hors bordure")
+
