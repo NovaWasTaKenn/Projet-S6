@@ -1,6 +1,6 @@
 
-from python_S6_V2.library.src.othello.game.renderers import Renderer
-from python_S6_V2.library.src.othello.logic.models import GameState
+from library.src.othello.game.renderers import Renderer
+from library.src.othello.logic.models import GameState
 
 class ConsoleRenderer(Renderer):
 

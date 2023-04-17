@@ -1,8 +1,8 @@
 
 import pygame as pg
-from python_S6_V2.library.src.othello.game.players import Player
-from python_S6_V2.library.src.othello.logic.models import *
-from python_S6_V2.library.src.othello.logic.exceptions import *
+from library.src.othello.game.players import Player
+from library.src.othello.logic.models import *
+from library.src.othello.logic.exceptions import *
 
 
 class PyGamePlayer(Player):
