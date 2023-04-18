@@ -1,0 +1,11 @@
+pyproject.toml
+src/othello/game/engine.py
+src/othello/game/players.py
+src/othello/game/renderers.py
+src/othello/logic/exceptions.py
+src/othello/logic/models.py
+src/othello/logic/validators.py
+src/projet_S6.egg-info/PKG-INFO
+src/projet_S6.egg-info/SOURCES.txt
+src/projet_S6.egg-info/dependency_links.txt
+src/projet_S6.egg-info/top_level.txt

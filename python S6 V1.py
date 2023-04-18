@@ -133,7 +133,7 @@ class Othello :
                         self.updateGameBoard(position)
                         self.player *= -1
                         i += 1
-                        self.showPyGameGameBoard()
+                        self.showPyGameGameBoard(my_font, background)
                         
                         
         count = self.count()
