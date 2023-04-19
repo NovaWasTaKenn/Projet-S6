@@ -37,12 +37,12 @@ class PyGameRenderer(Renderer):
 
             for i in range(8):
                 for j in range(8):
-                    a = int(self.gameBoard[i, j]) 
+                    a = int(gameState.grid.cells[i, j]) 
 
-                    if a == 1 : color = (0,0,0)
-                    elif a == -1 : color = (255,255,255)
+                    if a == Pawn.BLACK.value : color = (0,0,0)
+                    elif a == Pawn.WHITE.value : color = (255,255,255)
 
-                    if a != 0:
+                    if a != 2:
                         piece = Piece(color, (30 + 60*i +5, 30 + 60*j + 5))
                         self.background.blit(piece.surf, piece.rect)
 

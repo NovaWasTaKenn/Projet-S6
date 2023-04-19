@@ -50,8 +50,8 @@ class Move:
         for dif in difs:
 
             if(self.index[0]+dif[0] < 8 and self.index[1]+dif[1] < 8
-                and self.gameBoard[self.index[0]+dif[0], self.index[1]+dif[1]] == self.pawn
-                and self.gameBoard[self.index[0]+dif[0]//2, self.index[1]+dif[1]//2] == self.pawn.other): 
+                and self.beforeState.grid.cells[self.index[0]+dif[0], self.index[1]+dif[1]] == self.pawn
+                and self.beforeState.grid.cells[self.index[0]+dif[0]//2, self.index[1]+dif[1]//2] == self.pawn.other): 
 
                 sandwiches.append(dif)
                

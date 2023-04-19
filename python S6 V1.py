@@ -180,7 +180,7 @@ game = Othello()
 game.play()       
         
         
-        
+
         
         
         

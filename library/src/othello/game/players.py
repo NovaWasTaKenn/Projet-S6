@@ -3,7 +3,7 @@
 import abc
 
 from othello.logic.models import Pawn, Move, GameState
-from othello.logic.exceptions import InvalidGameState,InvalidGrid,InvalidMove
+from othello.logic.validators import validatePlayerTurn
 
 
 class Player(metaclass=abc.ABCMeta):
@@ -11,12 +11,16 @@ class Player(metaclass=abc.ABCMeta):
         self.pawn = pawn
 
     def makeMove(self, gameState : GameState) -> GameState: 
-        if self.pawn is gameState.currentPawn:
+
+        #print("inside make move")
+
+        if validatePlayerTurn(self, gameState):
             if move:= self.getMove(gameState):
+                #print("move afterstate")
                 return move.afterState
-        else: raise InvalidMove("Not your turn")
-            
+
+
     @abc.abstractmethod
-    def getMove(self, gameState: GameState) -> Move | None:
+    def getMove(self, gameState: GameState) -> Move :
         """Gets the player move"""
 
