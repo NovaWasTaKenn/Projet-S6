@@ -1,6 +1,6 @@
 
-from library.src.othello.game.renderers import Renderer
-from library.src.othello.logic.models import GameState
+from othello.game.renderers import Renderer
+from othello.logic.models import GameState
 
 class ConsoleRenderer(Renderer):
 

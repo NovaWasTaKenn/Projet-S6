@@ -1,7 +1,7 @@
 import pygame as pg
 
-from library.src.othello.game.renderers import Renderer
-from library.src.othello.logic.models import GameState, Pawn
+from othello.game.renderers import Renderer
+from othello.logic.models import GameState, Pawn
 
 
 class PyGameRenderer(Renderer):

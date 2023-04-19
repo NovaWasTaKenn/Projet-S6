@@ -1,8 +1,8 @@
 
-from library.src.othello.game.players import Player
-from library.src.othello.logic.models import Move, GameState
-from library.src.othello.logic.exceptions import InvalidMove
-from library.src.othello.logic.validators import validatePositionStr
+from othello.game.players import Player
+from othello.logic.models import Move, GameState
+from othello.logic.exceptions import InvalidMove
+from othello.logic.validators import validatePositionStr
 
 class ConsolePlayer(Player):
     def getMove(self, gameState : GameState) -> Move: 

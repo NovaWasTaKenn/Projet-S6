@@ -7,8 +7,8 @@ import numpy as np
 
 
 class Pawn(str, enum.Enum):
-    BLACK = 1
-    WHITE = 0
+    BLACK: 1
+    WHITE: 0
     
     def other(self) -> Pawn:
         return Pawn.BLACK if Pawn.WHITE else Pawn.BLACK
