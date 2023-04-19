@@ -6,12 +6,12 @@ import enum
 import numpy as np
 
 
-class Pawn(str, enum.Enum):
+class Pawn(enum.Enum):
     BLACK = 1
     WHITE = 0
     
     def other(self) -> Pawn:
-        return Pawn.BLACK if Pawn.WHITE else Pawn.BLACK
+        return Pawn.BLACK if self is Pawn.WHITE else Pawn.BLACK
     
 @dataclass(frozen=True)
 class Grid:
