@@ -1,4 +1,4 @@
-
+import copy
 import pygame as pg
 from game.players import Player
 from logic.models import *
@@ -33,46 +33,9 @@ class PyGamePlayer(Player):
 class IA(Player):
 
     def getMove(self, gameState: GameState) -> Move:
-        """if self.level == 1:
-            return self.getMoveLevel1(gameState)
-        elif self.level == 2:
-            return self.getMoveLevel2(gameState)
-        elif self.level == 3:
-            return self.getMoveLevel3(gameState)
-        else:
-            return None
-        """
-        return self.getMoveLevel3(gameState)
-    """def getMoveLevel1(self, gameState: GameState) -> Move:
-        # Retourne un coup valide aléatoire
-        return self.getRandomMove(gameState)
-
-    def getMoveLevel2(self, gameState: GameState) -> Move:
-        # Retourne le coup avec la valeur d'utilité maximale
-        return self.getBestMove(gameState)
-    """
-    def getMoveLevel3(self, gameState: GameState) -> Move:
         # Implémente l'algorithme Minimax avec élagage Alpha-Bêta
         return self.alphaBetaSearch(gameState)
-
-    def getRandomMove(self, gameState: GameState) -> Move:
-        moves = self.getPossibleMoves(gameState)
-        if moves:
-            return moves[0]
-        else:
-            return None
-
-    def getBestMove(self, gameState: GameState) -> Move:
-        moves = gameState.possibleMoves
-        bestMove = None
-        bestUtility = -float("inf")
-        for move in moves:
-            utility = self.evaluateMove(move, gameState)
-            if utility > bestUtility:
-                bestUtility = utility
-                bestMove = move
-        return bestMove
-
+    
     def alphaBetaSearch(self, gameState: GameState) -> Move:
         # Détermine la profondeur maximale de recherche
         depth = DEPTH
@@ -92,23 +55,74 @@ class IA(Player):
         return bestMove
 
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
-        if depth == 0 or self.isTerminal(gameState):
-            return self.utility(gameState)
+        if depth == 0 or gameState.possibleMoves == []:
+            return self.advanced_heuristic(gameState)
         v = -float("inf")
         for move in gameState.possibleMoves:
-            v = max(v, self.minValue(self.getResult(
-                gameState, move), alpha, beta, depth - 1))
+            v = max(v, self.minValue(move.afterState, alpha, beta, depth - 1))
             if v >= beta:
                 return v
             alpha = max(alpha, v)
         return v
 
     def minValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
-        if depth == 0 or self.isTerminal(gameState):
-            return self.utility(gameState)
+        if depth == 0 or gameState.possibleMoves == []:
+            return self.advanced_heuristic(gameState)
         v = float("inf")
-        for move in self.getPossibleMoves(gameState):
-            v = min(v, self.maxValue(self.getResult(
-                gameState, move), alpha, beta, depth - 1))
+        for move in gameState.possibleMoves:
+            v = min(v, self.maxValue(move.afterState, alpha, beta, depth - 1))
             if v <= alpha:
-                return
+                return v
+            beta = min(beta,v)
+        return v
+
+    def getResult(self, gameState: GameState, move: Move) -> GameState:
+        return move.afterState
+
+
+    def advanced_heuristic(self, state: GameState) -> float:
+        mobility_weight = 0.5
+        stability_weight = 0.25
+        center_weight = 0.25
+
+        current_pawn = state.currentPawn
+        other_pawn = current_pawn.other
+
+        current_mobility = len(state.possibleMoves)
+        other_mobility = len(
+            GameState(state.grid, state.currentTurn + 1, state.endGameDepth).possibleMoves)
+
+        current_stability = 0
+        other_stability = 0
+        stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
+        stable_positions += [(0, i) for i in range(2, 6)] + \
+            [(7, i) for i in range(2, 6)]
+        stable_positions += [(i, 0) for i in range(2, 6)] + \
+            [(i, 7) for i in range(2, 6)]
+        stable_positions += [(2, 2), (2, 5), (5, 2), (5, 5)]
+
+        for i in range(8):
+            for j in range(8):
+                if state.grid.cells[i, j] == current_pawn.value:
+                    if (i, j) in stable_positions:
+                        current_stability += 1
+                elif state.grid.cells[i, j] == other_pawn.value:
+                    if (i, j) in stable_positions:
+                        other_stability += 1
+
+        current_center = 0
+        other_center = 0
+        for i in range(8):
+            for j in range(8):
+                if state.grid.cells[i, j] == current_pawn.value:
+                    if (2 <= i <= 5) and (2 <= j <= 5):
+                        current_center += 1
+                elif state.grid.cells[i, j] == other_pawn.value:
+                    if (2 <= i <= 5) and (2 <= j <= 5):
+                        other_center += 1
+
+        score = (current_mobility - other_mobility) * mobility_weight
+        score += (current_stability - other_stability) * stability_weight
+        score += (current_center - other_center) * center_weight
+
+        return score
