@@ -42,11 +42,18 @@ class Move:
         cells = np.copy(self.beforeState.grid.cells)
         cells[self.index[0], self.index[1]] = self.pawn.value    
 
-        for sandwich in self.sandwiches:
-            flippedCell = [(sandwich[0][0]//2) + self.index[0] + sandwich[1][0], (sandwich[0][1]//2) + self.index[1] + sandwich[1][1]]
-            cells[flippedCell[0], flippedCell[1]] = self.pawn.value
+        
 
-        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, 6, self.pawn.other)
+        for sandwich in self.sandwiches:
+
+            for i in range(1,8):
+                for j in range(1,8):
+                    if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.other.value:
+                        cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] = self.pawn.value
+                    if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value:
+                        break
+
+        afterState_ = GameState(self.beforeState.grid, self.beforeState.currentTurn+1, 3, self.pawn.other)
         return afterState_ 
 
     @cached_property
