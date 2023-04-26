@@ -89,8 +89,7 @@ class IA(Player):
         other_pawn = current_pawn.other
 
         current_mobility = len(state.possibleMoves)
-        other_mobility = len(
-            GameState(state.grid, state.currentTurn + 1, state.endGameDepth).possibleMoves)
+        other_mobility = len(GameState(state.grid, state.currentTurn + 1, state.endGameDepth,state.currentPawn.other).possibleMoves)
 
         current_stability = 0
         other_stability = 0
