@@ -113,8 +113,8 @@ class GameState:
         if self.currentTurn == 1 : return GameStage.gameNotStarted
         elif self.currentTurn < 13 : return GameStage.earlyGame
         elif self.currentTurn < 60 - (self.endGameDepth+5) : return GameStage.endGame
-        elif Grid.counts[0] == Grid.counts[1] : return GameStage.tie
-        elif Grid.counts[0] < Grid.counts[1]: return GameStage.blackWin
+        elif self.grid.counts[0] == self.grid.counts[1] : return GameStage.tie
+        elif self.grid.counts[0] < self.grid.counts[1]: return GameStage.blackWin
 
         return GameStage.whiteWin
     
