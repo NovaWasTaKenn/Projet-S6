@@ -24,7 +24,8 @@ class Grid:
 
     @cached_property
     def counts(self) -> dict:
-        return dict(zip(np.unique(self.cells, return_counts=True)[0], np.unique(self.cells, return_counts=True)[1]))
+        uniques = np.unique(self.cells, return_counts=True)
+        return dict(zip(uniques[0], uniques[1]))
     
     
 
@@ -48,10 +49,13 @@ class Move:
 
             for i in range(1,8):
                 for j in range(1,8):
+                    if ( self.index[0]+i*sandwich[0] > 7 or self.index[1]+j*sandwich[1] > 7
+                    or self.index[0]+i*sandwich[0] < 0 or self.index[1]+j*sandwich[1] < 0
+                    or cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value):
+                        break
                     if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.other.value:
                         cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] = self.pawn.value
-                    if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value:
-                        break
+                    
 
         afterState_ = GameState(self.beforeState.grid, self.beforeState.currentTurn+1, 3, self.pawn.other)
         return afterState_ 
@@ -109,8 +113,8 @@ class GameState:
         if self.currentTurn == 1 : return GameStage.gameNotStarted
         elif self.currentTurn < 13 : return GameStage.earlyGame
         elif self.currentTurn < 60 - (self.endGameDepth+5) : return GameStage.endGame
-        elif Grid.counts["0"] == Grid.counts["1"] : return GameStage.tie
-        elif Grid.counts["0"] < Grid.counts["1"]: return GameStage.blackWin
+        elif Grid.counts[0] == Grid.counts[1] : return GameStage.tie
+        elif Grid.counts[0] < Grid.counts[1]: return GameStage.blackWin
 
         return GameStage.whiteWin
     
