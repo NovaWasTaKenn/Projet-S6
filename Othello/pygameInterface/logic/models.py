@@ -41,27 +41,31 @@ class Move:
     @cached_property
     def afterState(self) -> GameState:
         cells = np.copy(self.beforeState.grid.cells)
-        cells[self.index[0], self.index[1]] = self.pawn.value
-        for sandwich in self.sandwiches:
-            i = 1
-            j = 1
-            other = []
-            while (self.index[0]+i*sandwich[0] > 0 
-                   and self.index[0]+i*sandwich[0] < 7 
-                   and self.index[1]+j*sandwich[1] > 0 
-                   and self.index[1]+j*sandwich[1] < 7 
-                   and cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] != self.pawn.value 
-                   and [self.index[1]+j*sandwich[1]] != 2):
-                other.append((self.index[0]+i*sandwich[0],self.index[1]+j*sandwich[1]))
-                i+=1
-                j+=j
-            if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value:
-                for pawn in other:
-                    cells[pawn[0],pawn[1]] = self.pawn.value
+        cells[self.index[0], self.index[1]] = self.pawn.value    
 
-        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, 6,self.pawn.other)
-        print("afterState : ", afterState_)
-        return afterState_
+        #print()
+        #print()
+        #print("Sandwichs : ", self.sandwiches)
+
+        for sandwich in self.sandwiches:
+            #print(sandwich)
+
+            for i in range(1,8):
+
+                    if ( self.index[0]+i*sandwich[0] > 7 or self.index[1]+i*sandwich[1] > 7
+                    or self.index[0]+i*sandwich[0] < 0 or self.index[1]+i*sandwich[1] < 0
+                    or cells[self.index[0]+i*sandwich[0], self.index[1]+i*sandwich[1]] == self.pawn.value):
+                        break
+
+                    if cells[self.index[0]+i*sandwich[0], self.index[1]+i*sandwich[1]] == self.pawn.other.value:
+                        cells[self.index[0]+i*sandwich[0], self.index[1]+i*sandwich[1]] = self.pawn.value
+                    
+
+        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, 3, self.pawn.other)
+        #print()
+        #print()
+        #print("afterstate : ", afterState_)
+        return afterState_ 
 
     @cached_property
     def sandwiches(self) -> list:
@@ -69,20 +73,35 @@ class Move:
         difs = [(0, -1), (0, 1), (-1, 0), (1, 0),
                 (-1, -1), (1, 1), (1, -1), (-1, 1)]
 
+        
 
         for dif in difs:
-            for i in range (1,8):
-                if self.index[0]+i*dif[0] > 7 or self.index[0]+i*dif[0] < 0:
-                    break
-                for j in range(1,8):
-                    if self.index[1]+j*dif[1] > 7 or self.index[1]+j*dif[1] < 0:
-                        break
-                    otherPosition = [self.index[0]+i*dif[0], self.index[1]+j*dif[1]]
 
-                    if self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == self.pawn.value:
-                        if (self.index[0]+dif[0], self.index[1]+dif[1]) != (self.index[0], self.index[1]):
-                            sandwiches.append(dif)
-                        break
+            foundAdversary = False
+             
+            for i in range (1,8):
+
+                otherPosition = [self.index[0]+i*dif[0], self.index[1]+i*dif[1]]
+
+                if (otherPosition[0] < 0 or otherPosition[0] > 7
+                or otherPosition[1] < 0 or otherPosition[1] > 7
+                or self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == 2):
+                    break
+
+                if self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == self.pawn.other.value:
+                    foundAdversary = True
+
+                if self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == self.pawn.value and not foundAdversary:
+                    break
+
+                if self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == self.pawn.value and foundAdversary:
+
+                    if (self.index[0]+i*dif[0], self.index[1]+i*dif[1]) != (self.index[0], self.index[1]):
+                        sandwiches.append(dif)
+                    break
+        #print()
+        #print()
+        #print("sandwichs : ",sandwiches)
         return sandwiches
         
 
@@ -122,7 +141,7 @@ class GameState:
     def possibleMoves(self):
         otherPawn = self.currentPawn.other
         otherPawns = np.where(self.grid.cells==otherPawn.value)
-        print("otherPawns : ",otherPawns)
+        #print("otherPawns : ",otherPawns)
         offsets =[[1,-1,0,0], [0,0,1,-1]]
         moves = []
 
@@ -131,17 +150,18 @@ class GameState:
 
                 position = [xCoord+xOffset, otherPawns[1][i]+offsets[1][j]]
 
-                if (position[0] >= 1 and position[0] < 8
-                    and position[1] >= 1 and position[1] <8 
-                    and not len(list(filter(lambda x : x.index[0]==position[0] and x.index[1]==position[1], moves)))>0):
+                if (position[0] >= 0 and position[0] < 8
+                    and position[1] >= 0 and position[1] <8 
+                    and not len(list(filter(lambda x : x.index[0]==position[0] and x.index[1]==position[1], moves))) >  0):
                     try: 
                         move = Move(self.currentPawn, position, self)
                         moves.append(move)
                     except InvalidMove:
                         #print("")
                         None
-                
-
+        #print()
+        #print()      
+        #print("moves : ",moves)
         return moves
     
 

@@ -5,6 +5,7 @@ from game.players import Player
 from logic.models import *
 from logic.exceptions import *
 from game.renderers import Renderer
+import time
 
 ErrorHandler: TypeAlias = Callable[[Exception], None]
 
@@ -45,7 +46,7 @@ class Othello:
                     afterState = player.makeMove(gameState)
                     if afterState: 
                         gameState = afterState
-                        print("afterState Engine", afterState)
+                        #print("afterState Engine", afterState)
                     #print("Make move")
                 except InvalidMove as ex:
                     print(str(ex))

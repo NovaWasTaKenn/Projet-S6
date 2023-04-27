@@ -29,6 +29,16 @@ def validateMove(move:Move) -> bool:
             or (move.index[0]+1 < 8 and move.beforeState.grid.cells[move.index[0]+1, move.index[1]] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0]+1, move.index[1]]) == move.pawn.other)
             or (move.index[1]-1 >= 0 and move.beforeState.grid.cells[move.index[0], move.index[1]-1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0], move.index[1]-1]) == move.pawn.other)
             or (move.index[1]+1 < 8 and move.beforeState.grid.cells[move.index[0], move.index[1]+1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0], move.index[1]+1]) == move.pawn.other)
+            
+            or (move.index[0]+1 < 8 and move.index[1]+1 < 8 
+                and move.beforeState.grid.cells[move.index[0]+1, move.index[1]+1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0]+1, move.index[1]+1]) == move.pawn.other)
+            or (move.index[0]-1 < 8 and move.index[1]-1 < 8 
+                and move.beforeState.grid.cells[move.index[0]-1, move.index[1]-1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0]-1, move.index[1]-1]) == move.pawn.other)
+            or (move.index[0]-1 < 8 and move.index[1]+1 < 8 
+                and move.beforeState.grid.cells[move.index[0]-1, move.index[1]+1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0]-1, move.index[1]+1]) == move.pawn.other)
+            or (move.index[0]+1 < 8 and move.index[1]-1 < 8 
+                and move.beforeState.grid.cells[move.index[0]+1, move.index[1]-1] != 2 and Models.Pawn(move.beforeState.grid.cells[move.index[0]+1, move.index[1]-1]) == move.pawn.other)
+
             )
         
         if not neighbourAdversary: raise InvalidMove("No adversay in the neighbouring cells")
@@ -64,5 +74,6 @@ def validatePlayerTurn(player: Player, gameState: GameState):
     #print("gameState current turn :", gameState.currentTurn)
     #print("gameState current pawn : ", gameState.currentPawn)
     #print("equality : ", player.pawn == gameState.currentPawn)
+
     if player.pawn == gameState.currentPawn: return True
     raise InvalidMove("Not your turn")

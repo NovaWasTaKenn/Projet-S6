@@ -46,8 +46,7 @@ class IA(Player):
         alpha = -float("inf")
         beta = float("inf")
         for move in gameState.possibleMoves:
-            utility = self.minValue(self.getResult(
-                gameState, move), alpha, beta, depth - 1)
+            utility = self.minValue(self.getResult(move), alpha, beta, depth - 1)
             if utility > bestUtility:
                 bestUtility = utility
                 bestMove = move
@@ -76,7 +75,7 @@ class IA(Player):
             beta = min(beta,v)
         return v
 
-    def getResult(self, gameState: GameState, move: Move) -> GameState:
+    def getResult(self,  move: Move) -> GameState:
         return move.afterState
 
 
@@ -94,32 +93,26 @@ class IA(Player):
         current_stability = 0
         other_stability = 0
         stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
-        stable_positions += [(0, i) for i in range(2, 6)] + \
-            [(7, i) for i in range(2, 6)]
-        stable_positions += [(i, 0) for i in range(2, 6)] + \
-            [(i, 7) for i in range(2, 6)]
+        stable_positions += [(0, i) for i in range(1, 7)] + [(7, i) for i in range(1, 7)]
+        stable_positions += [(i, 0) for i in range(1, 7)] + [(i, 7) for i in range(1, 7)]
         stable_positions += [(2, 2), (2, 5), (5, 2), (5, 5)]
+
+        current_center = 0
+        other_center = 0
 
         for i in range(8):
             for j in range(8):
                 if state.grid.cells[i, j] == current_pawn.value:
                     if (i, j) in stable_positions:
                         current_stability += 1
-                elif state.grid.cells[i, j] == other_pawn.value:
-                    if (i, j) in stable_positions:
-                        other_stability += 1
-
-        current_center = 0
-        other_center = 0
-        for i in range(8):
-            for j in range(8):
-                if state.grid.cells[i, j] == current_pawn.value:
                     if (2 <= i <= 5) and (2 <= j <= 5):
                         current_center += 1
                 elif state.grid.cells[i, j] == other_pawn.value:
+                    if (i, j) in stable_positions:
+                        other_stability += 1
                     if (2 <= i <= 5) and (2 <= j <= 5):
                         other_center += 1
-
+                
         score = (current_mobility - other_mobility) * mobility_weight
         score += (current_stability - other_stability) * stability_weight
         score += (current_center - other_center) * center_weight
