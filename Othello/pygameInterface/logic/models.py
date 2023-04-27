@@ -41,48 +41,48 @@ class Move:
     @cached_property
     def afterState(self) -> GameState:
         cells = np.copy(self.beforeState.grid.cells)
-        cells[self.index[0], self.index[1]] = self.pawn.value    
-
-        
-
+        cells[self.index[0], self.index[1]] = self.pawn.value
         for sandwich in self.sandwiches:
+            i = 1
+            j = 1
+            other = []
+            while (self.index[0]+i*sandwich[0] > 0 
+                   and self.index[0]+i*sandwich[0] < 7 
+                   and self.index[1]+j*sandwich[1] > 0 
+                   and self.index[1]+j*sandwich[1] < 7 
+                   and cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] != self.pawn.value 
+                   and [self.index[1]+j*sandwich[1]] != 2):
+                other.append((self.index[0]+i*sandwich[0],self.index[1]+j*sandwich[1]))
+                i+=1
+                j+=j
+            if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value:
+                for pawn in other:
+                    cells[pawn[0],pawn[1]] = self.pawn.value
 
-            for i in range(1,8):
-                for j in range(1,8):
-                    if ( self.index[0]+i*sandwich[0] > 7 or self.index[1]+j*sandwich[1] > 7
-                    or self.index[0]+i*sandwich[0] < 0 or self.index[1]+j*sandwich[1] < 0
-                    or cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.value):
-                        break
-                    if cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] == self.pawn.other.value:
-                        cells[self.index[0]+i*sandwich[0], self.index[1]+j*sandwich[1]] = self.pawn.value
-                    
-
-        afterState_ = GameState(self.beforeState.grid, self.beforeState.currentTurn+1, 3, self.pawn.other)
-        return afterState_ 
+        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, 6,self.pawn.other)
+        print("afterState : ", afterState_)
+        return afterState_
 
     @cached_property
     def sandwiches(self) -> list:
         sandwiches = []
-        difs = [(-i, j) for i in range(1, 8)
-                for j in range(-i, i+1) if (i, j) != (0, 0)]
+        difs = [(0, -1), (0, 1), (-1, 0), (1, 0),
+                (-1, -1), (1, 1), (1, -1), (-1, 1)]
+
 
         for dif in difs:
-            ownPosition = [self.index[0]+dif[0], self.index[1]+dif[1]]
-            otherPosition = [self.index[0]+dif[0]//2, self.index[1]+dif[1]//2]
+            for i in range (1,8):
+                if self.index[0]+i*dif[0] > 7 or self.index[0]+i*dif[0] < 0:
+                    break
+                for j in range(1,8):
+                    if self.index[1]+j*dif[1] > 7 or self.index[1]+j*dif[1] < 0:
+                        break
+                    otherPosition = [self.index[0]+i*dif[0], self.index[1]+j*dif[1]]
 
-            while (0 <= ownPosition[0] < 8 and 0 <= ownPosition[1] < 8
-                and self.beforeState.grid.cells[ownPosition[0], ownPosition[1]] != 2):
-
-                if (Pawn(self.beforeState.grid.cells[ownPosition[0], ownPosition[1]]) == self.pawn
-                    and self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] != 2
-                        and Pawn(self.beforeState.grid.cells[otherPosition[0], otherPosition[1]]) == self.pawn.other):
-
-                    sandwiches.append(dif)
-
-                ownPosition = [ownPosition[0]+dif[0], ownPosition[1]+dif[1]]
-                otherPosition = [otherPosition[0] +
-                                dif[0]//2, otherPosition[1]+dif[1]//2]
-
+                    if self.beforeState.grid.cells[otherPosition[0], otherPosition[1]] == self.pawn.value:
+                        if (self.index[0]+dif[0], self.index[1]+dif[1]) != (self.index[0], self.index[1]):
+                            sandwiches.append(dif)
+                        break
         return sandwiches
         
 
