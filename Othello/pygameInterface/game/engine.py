@@ -8,14 +8,12 @@ from game.renderers import Renderer
 import time
 import functools
 
-ErrorHandler: TypeAlias = Callable[[Exception], None]
 
 @dataclass(frozen=True)
 class Othello:
     player1: Player
     player2: Player
     renderer: Renderer
-    errorHandler: ErrorHandler | None = None
 
     def play(self) -> None:
         cells = np.full((8,8),2)
@@ -24,7 +22,7 @@ class Othello:
         cells[4,4] = 1
         cells[3,3] = 1
 
-        gameState = GameState(Grid(cells), 1, 6, Pawn.BLACK)
+        gameState = GameState(Grid(cells), 1, Pawn.BLACK)
 
         start = 0
         #print("GameState created")
@@ -48,8 +46,8 @@ class Othello:
 
             player = self.getCurrentPlayer(gameState)
             #print("current player : ", player.pawn)
-            if len(gameState.possibleMoves) == 0:
-                gameState = GameState(gameState.grid, 1, 6, gameState.currentPawn) # 6 : EndGame Depth maybe surface through menu or cli
+            if gameState.possibleMoves == []:
+                gameState = GameState(gameState.grid, gameState.currentTurn, gameState.currentPawn.other) # 6 : EndGame Depth maybe surface through menu or cli
             else :
                 try:
                     afterState = player.makeMove(gameState)
@@ -61,6 +59,9 @@ class Othello:
                     print(str(ex))
         
         print("Turn : ", gameState.currentTurn)
+        print("PossibleMoves : ", gameState.possibleMoves)
+        print("OtherPossibleMoves : ", GameState(gameState.grid, gameState.currentTurn, gameState.currentPawn.other).possibleMoves)
+
         if(gameState.gameStage == GameStage.blackWin): print("Black wins")
         if(gameState.gameStage == GameStage.whiteWin): print("White wins")
         if(gameState.gameStage == GameStage.tie) : print("tie")
@@ -75,7 +76,9 @@ def timer(fonction):
         value = fonction(*param, **param2)
         end = time.perf_counter()
         runTime = end - start
-        print(f"Function {fonction.__name__} finished in {runTime} seconds")
+        print()
+        print(f" ------> Function {fonction.__name__} finished in {runTime} seconds")
+        print()
         return value
     return wrap
 

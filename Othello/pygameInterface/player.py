@@ -1,11 +1,11 @@
-import copy
 import pygame as pg
 from game.players import Player
 from logic.models import *
 from logic.exceptions import *
-from game.engine import timer, debug
+from game.engine import Othello, timer, debug
+import logic.settings
 
-DEPTH = 4
+nbFeuilles = 0
 
 class PyGamePlayer(Player):
     
@@ -33,17 +33,15 @@ class PyGamePlayer(Player):
 
 class IA(Player):
     
-    def __init__(self, pawn : Pawn, depth: int, endGameDepth: int):
-        super.__init__(pawn)
-        self.depth = depth
-        self.endGameDepth = endGameDepth
 
-
+    @timer
     def getMove(self, gameState: GameState) -> Move:
         # Implémente l'algorithme Minimax avec élagage Alpha-Bêta
 
         #Compte le nb de feuilles parcourues par minMax
-        global nbFeuilles 
+        
+        global nbFeuilles
+
         nbFeuilles = 0
 
         rslt = self.alphaBetaSearch(gameState)
@@ -54,14 +52,15 @@ class IA(Player):
 
         return rslt
     
-    @debug
     def alphaBetaSearch(self, gameState: GameState) -> Move:
         # Détermine la profondeur maximale de recherche
-        depth = self.depth if gameState.gameStage != GameStage.endGame else self.endGameDepth
+
+        depth = settings.depth if gameState.gameStage != GameStage.endGame else settings.endGameDepth
 
         print()
         print(" ------>  Profondeur : ",depth)
         print()
+
         # Appelle MAX-VALUE avec des arguments appropriés
         bestMove = None
         bestUtility = -float("inf")
@@ -77,8 +76,10 @@ class IA(Player):
             alpha = max(alpha, bestUtility)
         return bestMove
 
-    @debug
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
+
+        global nbFeuilles
+
         if depth == 0 or gameState.possibleMoves == []:
             nbFeuilles += 1
             return self.advanced_heuristic(gameState)
@@ -88,13 +89,15 @@ class IA(Player):
         for move in gameState.possibleMoves:
             v = max(v, self.minValue(move.afterState, alpha, beta, depth - 1))
             if v >= beta:
-                print("élaguage v >= beta")
+                #print("élaguage v >= beta")
                 return v
             alpha = max(alpha, v)
         return v
 
-    @debug
     def minValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
+
+        global nbFeuilles
+
         if depth == 0 or gameState.possibleMoves == []:
             nbFeuilles += 1
             return self.advanced_heuristic(gameState)
@@ -104,7 +107,7 @@ class IA(Player):
         for move in gameState.possibleMoves:
             v = min(v, self.maxValue(move.afterState, alpha, beta, depth - 1))
             if v <= alpha:
-                print("élaguage v >= alpha")
+                #print("élaguage v >= alpha")
                 return v
             beta = min(beta,v)
         return v
@@ -121,7 +124,10 @@ class IA(Player):
         other_pawn = current_pawn.other
 
         current_mobility = len(state.possibleMoves)
-        other_mobility = len(GameState(state.grid, state.currentTurn + 1, state.endGameDepth,state.currentPawn.other).possibleMoves)
+        other_mobility = 0
+
+        if state.currentTurn+1 <= 60 :
+            other_mobility = len(GameState(state.grid, state.currentTurn + 1,state.currentPawn.other).possibleMoves) 
 
         current_stability = 0
         other_stability = 0

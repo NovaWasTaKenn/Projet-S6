@@ -4,7 +4,7 @@ from functools import cached_property
 from logic.validators import *
 import enum
 import numpy as np
-
+from logic import settings
 
 class Pawn(enum.Enum):
     BLACK = 1
@@ -59,9 +59,9 @@ class Move:
 
                     if cells[self.index[0]+i*sandwich[0], self.index[1]+i*sandwich[1]] == self.pawn.other.value:
                         cells[self.index[0]+i*sandwich[0], self.index[1]+i*sandwich[1]] = self.pawn.value
-                    
 
-        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, 3, self.pawn.other)
+        
+        afterState_ = GameState(Grid(cells), self.beforeState.currentTurn+1, self.pawn.other)
         #print()
         #print()
         #print("afterstate : ", afterState_)
@@ -117,21 +117,19 @@ class GameStage(enum.Enum):
 
 #Dataclass auto implements __init__, __repr__, __eq__ and order functions : __ge__, __le__, ...
 @dataclass(frozen=True)
-class GameState:
+class GameState(object):
     grid: Grid
     currentTurn: int
-    endGameDepth: int
     currentPawn: Pawn
-
-    def __post_init__(self):
-        validateGameState(self)
     
     #Possiblement plus intéressant de séparer en plusieurs propriétés
     @cached_property
     def gameStage(self) -> GameStage:
+
+
         if self.currentTurn == 1 and len(self.possibleMoves) != 0: return GameStage.gameNotStarted
         elif self.currentTurn < 13 and len(self.possibleMoves) != 0: return GameStage.earlyGame
-        elif self.currentTurn < 60 - (self.endGameDepth+5) and len(self.possibleMoves) != 0: return GameStage.midGame
+        elif self.currentTurn < 60 - (settings.endGameDepth + 5) and len(self.possibleMoves) != 0: return GameStage.midGame
         elif self.currentTurn <= 60 and len(self.possibleMoves) != 0: return GameStage.endGame
         elif self.grid.counts[0] > self.grid.counts[1] : return GameStage.whiteWin
         elif self.grid.counts[0] < self.grid.counts[1]: return GameStage.blackWin

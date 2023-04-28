@@ -47,13 +47,13 @@ def validateMove(move:Move) -> bool:
 
         if not hasSandwiches : raise InvalidMove("Placing the pawn here does not create flip an adversary pawn")
 
-def validateGameState(gameState: GameState):
-    try:    
-        validateGrid(gameState.grid)
-    except InvalidGrid as e:
-        raise InvalidGameState(f"Le grid n'est pas valide : {str(e)}")
-    if gameState.currentTurn <= 60 and gameState.currentTurn > 0 : return True
-    raise InvalidGameState("Le nombre de tour est supérieur à 60 ou inférieur à 0")
+#def validateGameState(gameState: GameState):
+#    try:    
+#        validateGrid(gameState.grid)
+#    except InvalidGrid as e:
+#        raise InvalidGameState(f"Le grid n'est pas valide : {str(e)}")
+#    if gameState.currentTurn <= 100 and gameState.currentTurn > 0 : return True
+#    raise InvalidGameState("Le nombre de tour est supérieur à 60 ou inférieur à 0")
 
 
 
