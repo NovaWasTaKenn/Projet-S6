@@ -6,6 +6,7 @@ from logic.models import *
 from logic.exceptions import *
 from game.renderers import Renderer
 import time
+import functools
 
 ErrorHandler: TypeAlias = Callable[[Exception], None]
 
@@ -25,6 +26,7 @@ class Othello:
 
         gameState = GameState(Grid(cells), 1, 6, Pawn.BLACK)
 
+        start = 0
         #print("GameState created")
         while (gameState.currentTurn <= 60 
             and not gameState.gameStage == GameStage.blackWin  
@@ -33,8 +35,15 @@ class Othello:
 
             #print("Turn :", gameState.currentTurn)
 
-            
+            print()
+            print(f" ------> Joueur {gameState.currentPawn.name}")
+            print()
+
+            #end = time.perf_counter()
+            #print(f"{end-start} since last render")
             self.renderer.Render(gameState)
+
+            #start = time.perf_counter()
             #print("Game rendered")
 
             player = self.getCurrentPlayer(gameState)
@@ -50,8 +59,36 @@ class Othello:
                     #print("Make move")
                 except InvalidMove as ex:
                     print(str(ex))
-        input()
+        
+        print("Turn : ", gameState.currentTurn)
+        if(gameState.gameStage == GameStage.blackWin): print("Black wins")
+        if(gameState.gameStage == GameStage.whiteWin): print("White wins")
+        if(gameState.gameStage == GameStage.tie) : print("tie")
 
     def getCurrentPlayer(self, gameState : GameState) -> Player:
         return self.player1 if self.player1.pawn == gameState.currentPawn else self.player2
+    
+def timer(fonction):
+    @functools.wraps(fonction)
+    def wrap(*param, **param2):
+        start = time.perf_counter()
+        value = fonction(*param, **param2)
+        end = time.perf_counter()
+        runTime = end - start
+        print(f"Function {fonction.__name__} finished in {runTime} seconds")
+        return value
+    return wrap
+
+def debug(func):
+    """Print the function signature and return value"""
+    @functools.wraps(func)
+    def wrapper_debug(*args, **kwargs):
+        args_repr = [repr(a) for a in args]                      # 1
+        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]  # 2
+        signature = ", ".join(args_repr + kwargs_repr)           # 3
+        print(f"Calling {func.__name__}({signature})")
+        value = func(*args, **kwargs)
+        print(f"{func.__name__!r} returned {value!r}")           # 4
+        return value
+    return wrapper_debug
             

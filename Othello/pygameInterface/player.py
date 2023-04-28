@@ -3,6 +3,7 @@ import pygame as pg
 from game.players import Player
 from logic.models import *
 from logic.exceptions import *
+from game.engine import timer, debug
 
 DEPTH = 4
 
@@ -31,53 +32,85 @@ class PyGamePlayer(Player):
                 
 
 class IA(Player):
+    
+    def __init__(self, pawn : Pawn, depth: int, endGameDepth: int):
+        super.__init__(pawn)
+        self.depth = depth
+        self.endGameDepth = endGameDepth
+
 
     def getMove(self, gameState: GameState) -> Move:
         # Implémente l'algorithme Minimax avec élagage Alpha-Bêta
-        return self.alphaBetaSearch(gameState)
+
+        #Compte le nb de feuilles parcourues par minMax
+        global nbFeuilles 
+        nbFeuilles = 0
+
+        rslt = self.alphaBetaSearch(gameState)
+
+        print()
+        print(" ----> Nombre de feuilles parcouru : ", nbFeuilles)
+        print()
+
+        return rslt
     
+    @debug
     def alphaBetaSearch(self, gameState: GameState) -> Move:
         # Détermine la profondeur maximale de recherche
-        depth = DEPTH
+        depth = self.depth if gameState.gameStage != GameStage.endGame else self.endGameDepth
 
+        print()
+        print(" ------>  Profondeur : ",depth)
+        print()
         # Appelle MAX-VALUE avec des arguments appropriés
         bestMove = None
         bestUtility = -float("inf")
         alpha = -float("inf")
         beta = float("inf")
+        #print("Possible moves : ", gameState.possibleMoves)
         for move in gameState.possibleMoves:
             utility = self.minValue(self.getResult(move), alpha, beta, depth - 1)
             if utility > bestUtility:
+
                 bestUtility = utility
                 bestMove = move
             alpha = max(alpha, bestUtility)
         return bestMove
 
+    @debug
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
         if depth == 0 or gameState.possibleMoves == []:
+            nbFeuilles += 1
             return self.advanced_heuristic(gameState)
         v = -float("inf")
+
+        #print("Possible moves : ", gameState.possibleMoves)
         for move in gameState.possibleMoves:
             v = max(v, self.minValue(move.afterState, alpha, beta, depth - 1))
             if v >= beta:
+                print("élaguage v >= beta")
                 return v
             alpha = max(alpha, v)
         return v
 
+    @debug
     def minValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
         if depth == 0 or gameState.possibleMoves == []:
+            nbFeuilles += 1
             return self.advanced_heuristic(gameState)
         v = float("inf")
+
+        #print("Possible moves : ", gameState.possibleMoves)
         for move in gameState.possibleMoves:
             v = min(v, self.maxValue(move.afterState, alpha, beta, depth - 1))
             if v <= alpha:
+                print("élaguage v >= alpha")
                 return v
             beta = min(beta,v)
         return v
 
     def getResult(self,  move: Move) -> GameState:
         return move.afterState
-
 
     def advanced_heuristic(self, state: GameState) -> float:
         mobility_weight = 0.5
