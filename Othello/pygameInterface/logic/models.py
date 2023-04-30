@@ -129,7 +129,7 @@ class GameState(object):
 
         if self.currentTurn == 1 and len(self.possibleMoves) != 0: return GameStage.gameNotStarted
         elif self.currentTurn < 13 and len(self.possibleMoves) != 0: return GameStage.earlyGame
-        elif self.currentTurn < 60 - (settings.endGameDepth + 5) and len(self.possibleMoves) != 0: return GameStage.midGame
+        elif self.currentTurn < 60 - (settings.endGameDepth + 3) and len(self.possibleMoves) != 0: return GameStage.midGame
         elif self.currentTurn <= 60 and len(self.possibleMoves) != 0: return GameStage.endGame
         elif self.grid.counts[0] > self.grid.counts[1] : return GameStage.whiteWin
         elif self.grid.counts[0] < self.grid.counts[1]: return GameStage.blackWin

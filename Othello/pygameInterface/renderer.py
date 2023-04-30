@@ -1,7 +1,7 @@
 import pygame as pg
 
 from game.renderers import Renderer
-from logic.models import GameState, Pawn
+from logic.models import GameState, Pawn, Move
 
 
 class PyGameRenderer(Renderer):
@@ -11,10 +11,10 @@ class PyGameRenderer(Renderer):
         pg.init()
 
         self.font = pg.font.SysFont('Comic Sans MS', 15, True)
-        self.background = pg.display.set_mode((740 ,540))
+        self.background = pg.display.set_mode((750 ,540))
 
 
-    def Render(self, gameState : GameState) -> None:
+    def Render(self, gameState : GameState, timeElapsed: float, move: Move) -> None:
             pg.font.init()
 
 
@@ -34,6 +34,12 @@ class PyGameRenderer(Renderer):
 
             currentPlayer = self.font.render("Joueur actuel : noir" if gameState.currentPawn == Pawn.BLACK else "Joueur actuel : blanc", False, (0, 0, 0))
             self.background.blit(currentPlayer, (540 , 50))
+
+            timeElapsedTxt = self.font.render(f"Temps depuis dernier tour : \n{timeElapsed:5.4f} seconds", False, (0, 0, 0))
+            self.background.blit(timeElapsedTxt, (540 , 75))
+
+            lastMoveTxt = self.font.render(f"Coup précedent : ({move.index[0]}, {move.index[1]})" if move != None else "Pas de coup précedent", False, (0, 0, 0))
+            self.background.blit(lastMoveTxt, (540 , 125))
 
             for i in range(8):
                 for j in range(8):
@@ -59,3 +65,7 @@ class  Piece(pg.sprite.Sprite):
         self.surf.fill((0,102,0))
         pg.draw.circle(self.surf, color, (25,25), 20)
         self.rect = self.surf.get_rect(topleft = (self.x, self.y))
+
+
+
+

@@ -3,13 +3,13 @@ from game.players import Player
 from logic.models import *
 from logic.exceptions import *
 from game.engine import Othello, timer, debug
-import logic.settings
 
 nbFeuilles = 0
 
 class PyGamePlayer(Player):
     
     def getMove(self, gameState: GameState) -> Move:
+
 
         for event in pg.event.get():
                 
@@ -22,13 +22,15 @@ class PyGamePlayer(Player):
                     try:
                         position = pg.mouse.get_pos()
                         position = ((position[0]-30)//60, (position[1]-30)//60)
-                        print("position :", position)
+                        #print("position :", position)
                         move = Move(gameState.currentPawn, position, gameState)
                         
                     except Exception as ex:
                          print(str(ex))
 
                     return move
+                
+
                 
 
 class IA(Player):

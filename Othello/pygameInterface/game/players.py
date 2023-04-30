@@ -10,14 +10,14 @@ class Player(metaclass=abc.ABCMeta):
     def __init__(self, pawn: Pawn) -> None:
         self.pawn = pawn
 
-    def makeMove(self, gameState : GameState) -> GameState: 
+    def makeMove(self, gameState : GameState) -> Move: 
 
         #print("inside make move")
 
         if validatePlayerTurn(self, gameState):
             if move:= self.getMove(gameState):
                 #print("move afterstate")
-                return move.afterState
+                return move
 
 
     @abc.abstractmethod

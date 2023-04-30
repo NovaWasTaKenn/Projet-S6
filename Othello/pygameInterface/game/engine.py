@@ -25,6 +25,8 @@ class Othello:
         gameState = GameState(Grid(cells), 1, Pawn.BLACK)
 
         start = 0
+        lastMove = None
+
         #print("GameState created")
         while (gameState.currentTurn <= 60 
             and not gameState.gameStage == GameStage.blackWin  
@@ -37,12 +39,13 @@ class Othello:
             print(f" ------> Joueur {gameState.currentPawn.name}")
             print()
 
-            #end = time.perf_counter()
-            #print(f"{end-start} since last render")
-            self.renderer.Render(gameState)
+            
 
-            #start = time.perf_counter()
-            #print("Game rendered")
+            end = time.perf_counter()
+            timeElapsed = end-start
+            self.renderer.Render(gameState, timeElapsed, lastMove)
+
+            start = time.perf_counter()
 
             player = self.getCurrentPlayer(gameState)
             #print("current player : ", player.pawn)
@@ -50,13 +53,19 @@ class Othello:
                 gameState = GameState(gameState.grid, gameState.currentTurn, gameState.currentPawn.other) # 6 : EndGame Depth maybe surface through menu or cli
             else :
                 try:
-                    afterState = player.makeMove(gameState)
+                    lastMove = player.makeMove(gameState)
+                    afterState = lastMove.afterState
                     if afterState: 
                         gameState = afterState
                         #print("afterState Engine", afterState)
                     #print("Make move")
                 except InvalidMove as ex:
                     print(str(ex))
+
+                #except StopGame as ex :  # Vérif si fermeture fenêtre gérée sans le bool sinon ajouter done dans while pour couper le jeu
+                #    print(str(ex))
+                #    # done = True
+
         
         print("Turn : ", gameState.currentTurn)
         print("PossibleMoves : ", gameState.possibleMoves)
