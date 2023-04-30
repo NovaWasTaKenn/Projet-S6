@@ -35,9 +35,9 @@ class Othello:
 
             #print("Turn :", gameState.currentTurn)
 
-            print()
-            print(f" ------> Joueur {gameState.currentPawn.name}")
-            print()
+            #print()
+            #print(f" ------> Joueur {gameState.currentPawn.name}")
+            #print()
 
             
 
@@ -50,6 +50,7 @@ class Othello:
             player = self.getCurrentPlayer(gameState)
             #print("current player : ", player.pawn)
             if gameState.possibleMoves == []:
+                print("No possible move")
                 gameState = GameState(gameState.grid, gameState.currentTurn, gameState.currentPawn.other) # 6 : EndGame Depth maybe surface through menu or cli
             else :
                 try:

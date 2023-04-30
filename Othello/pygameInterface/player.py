@@ -36,7 +36,6 @@ class PyGamePlayer(Player):
 class IA(Player):
     
 
-    @timer
     def getMove(self, gameState: GameState) -> Move:
         # Implémente l'algorithme Minimax avec élagage Alpha-Bêta
 
@@ -59,9 +58,9 @@ class IA(Player):
 
         depth = settings.depth if gameState.gameStage != GameStage.endGame else settings.endGameDepth
 
-        print()
-        print(" ------>  Profondeur : ",depth)
-        print()
+        #print()
+        #print(" ------>  Profondeur : ",depth)
+        #print()
 
         # Appelle MAX-VALUE avec des arguments appropriés
         bestMove = None
