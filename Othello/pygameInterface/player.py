@@ -12,24 +12,20 @@ class PyGamePlayer(Player):
 
 
         for event in pg.event.get():
-                
-                
-                if event.type == pg.QUIT:
-                    raise StopGame("Player closed the window")
-                elif event.type == pg.MOUSEBUTTONUP:
-                    move = None
+            if event.type == pg.MOUSEBUTTONUP:
+                move = None
 
-                    try:
-                        position = pg.mouse.get_pos()
-                        position = ((position[0]-30)//60, (position[1]-30)//60)
-                        #print("position :", position)
-                        move = Move(gameState.currentPawn, position, gameState)
-                        
-                    except Exception as ex:
-                         print(str(ex))
+                try:
+                    position = pg.mouse.get_pos()
+                    position = ((position[0]-30)//60, (position[1]-30)//60)
+                    #print("position :", position)
+                    move = Move(gameState.currentPawn, position, gameState)
+                    
+                except Exception as ex:
+                    print(str(ex))
 
-                    return move
-                
+                return move
+            
 
                 
 
@@ -71,10 +67,11 @@ class IA(Player):
         for move in gameState.possibleMoves:
             utility = self.minValue(self.getResult(move), alpha, beta, depth - 1)
             if utility > bestUtility:
-
                 bestUtility = utility
                 bestMove = move
             alpha = max(alpha, bestUtility)
+            if alpha >= beta:
+                break  # coupure alpha-beta
         return bestMove
 
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
