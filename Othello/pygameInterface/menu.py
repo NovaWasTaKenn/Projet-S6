@@ -30,9 +30,9 @@ def main() -> None:
                                                      manager=gui_manager)
     endGameDepthepthInput = pygame_gui.elements.UITextEntryLine(relative_rect=pg.Rect((50, 150), (300, 50)), 
                                                                 manager=gui_manager)
-
-    depthInput.set_allowed_characters(allowed_characters = ["1","2","3","4","5","6","7","8","9"])
-    endGameDepthepthInput.set_allowed_characters(allowed_characters = ["1","2","3","4","5","6","7","8","9"])
+    allowed = [str(i) for i in range(0, 20)]
+    depthInput.set_allowed_characters(allowed_characters = allowed)
+    endGameDepthepthInput.set_allowed_characters(allowed_characters = allowed)
 
     # Set up the dropdown inputs
     whiteItems = ["IA", "Humain"]

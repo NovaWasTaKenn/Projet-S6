@@ -119,7 +119,6 @@ class IA(Player):
         center_weight = 0.25
 
         current_pawn = state.currentPawn
-        other_pawn = current_pawn.other
 
         current_mobility = len(state.possibleMoves)
         other_mobility = 0
@@ -127,28 +126,8 @@ class IA(Player):
         if state.currentTurn+1 <= 60 :
             other_mobility = len(GameState(state.grid, state.currentTurn + 1,state.currentPawn.other).possibleMoves) 
 
-        current_stability = 0
-        other_stability = 0
-        stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
-        stable_positions += [(0, i) for i in range(1, 7)] + [(7, i) for i in range(1, 7)]
-        stable_positions += [(i, 0) for i in range(1, 7)] + [(i, 7) for i in range(1, 7)]
-        stable_positions += [(2, 2), (2, 5), (5, 2), (5, 5)]
 
-        current_center = 0
-        other_center = 0
-
-        for i in range(8):
-            for j in range(8):
-                if state.grid.cells[i, j] == current_pawn.value:
-                    if (i, j) in stable_positions:
-                        current_stability += 1
-                    if (2 <= i <= 5) and (2 <= j <= 5):
-                        current_center += 1
-                elif state.grid.cells[i, j] == other_pawn.value:
-                    if (i, j) in stable_positions:
-                        other_stability += 1
-                    if (2 <= i <= 5) and (2 <= j <= 5):
-                        other_center += 1
+        current_stability, other_stability, current_center, other_center = state.grid.compute_stability_and_center_scores()
                 
         score = (current_mobility - other_mobility) * mobility_weight
         score += (current_stability - other_stability) * stability_weight
