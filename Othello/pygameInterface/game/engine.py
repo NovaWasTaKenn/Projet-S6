@@ -7,7 +7,7 @@ from logic.exceptions import *
 from game.renderers import Renderer
 import time
 import functools
-
+import pygame as pg
 
 @dataclass(frozen=True)
 class Othello:
@@ -33,13 +33,14 @@ class Othello:
             and not gameState.gameStage == GameStage.whiteWin
             and not gameState.gameStage == GameStage.tie):
 
-            #print("Turn :", gameState.currentTurn)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    raise StopGame("Player closed the window")
 
+            #print("Turn :", gameState.currentTurn)
             #print()
             #print(f" ------> Joueur {gameState.currentPawn.name}")
             #print()
-
-            
 
             end = time.perf_counter()
             timeElapsed = end-start
@@ -49,6 +50,7 @@ class Othello:
 
             player = self.getCurrentPlayer(gameState)
             #print("current player : ", player.pawn)
+            
             if gameState.possibleMoves == []:
                 print("No possible move")
                 gameState = GameState(gameState.grid, gameState.currentTurn, gameState.currentPawn.other) # 6 : EndGame Depth maybe surface through menu or cli

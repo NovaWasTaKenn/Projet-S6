@@ -5,6 +5,7 @@ from logic.validators import *
 import enum
 import numpy as np
 from logic import settings
+from typing import Tuple
 
 class Pawn(enum.Enum):
     BLACK = 1
@@ -27,7 +28,42 @@ class Grid:
         uniques = np.unique(self.cells, return_counts=True)
         return dict(zip(uniques[0], uniques[1]))
     
-    
+    def compute_stability_and_center_scores(self) -> Tuple[np.array, np.array]:
+        """
+        Computes the stability and center scores for each pawn type in the grid.
+        Returns a tuple of two numpy arrays: the first contains the stability score for each pawn type,
+        and the second contains the center score for each pawn type.
+        """
+
+        # Define the stability matrix
+        stability_matrix = np.array([
+            [20, -3, 11, 8, 8, 11, -3, 20],
+            [-3, -7, -4, 1, 1, -4, -7, -3],
+            [11, -4, 2, 2, 2, 2, -4, 11],
+            [8, 1, 2, -3, -3, 2, 1, 8],
+            [8, 1, 2, -3, -3, 2, 1, 8],
+            [11, -4, 2, 2, 2, 2, -4, 11],
+            [-3, -7, -4, 1, 1, -4, -7, -3],
+            [20, -3, 11, 8, 8, 11, -3, 20]
+        ])
+
+        # Define the center matrix
+        center_matrix = np.zeros((8, 8))
+        center_matrix[2:6, 2:6] = np.array([
+            [0, 0, 0, 0],
+            [0, 1, 1, 0],
+            [0, 1, 1, 0],
+            [0, 0, 0, 0]
+        ])
+
+        # Compute the stability and center scores for each pawn type
+        current_stability = np.sum(stability_matrix * (self.cells == 1))
+        other_stability = np.sum(stability_matrix * (self.cells == 2))
+        current_center = np.sum(center_matrix * (self.cells == 1))
+        other_center = np.sum(center_matrix * (self.cells == 2))
+
+        return current_stability, other_stability, current_center, other_center
+        
 
 @dataclass(frozen=True)
 class Move:
@@ -164,6 +200,14 @@ class GameState(object):
         #print("moves : ",moves)
         return moves
     
-
+    @cached_property
+    def stablePositions(self):
+        stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
+        stable_positions += [(0, i) for i in range(1, 7)] + \
+            [(7, i) for i in range(1, 7)]
+        stable_positions += [(i, 0) for i in range(1, 7)] + \
+            [(i, 7) for i in range(1, 7)]
+        stable_positions += [(2, 2), (2, 5), (5, 2), (5, 5)]
+        return stable_positions
 
 

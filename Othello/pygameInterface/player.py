@@ -12,24 +12,20 @@ class PyGamePlayer(Player):
 
 
         for event in pg.event.get():
-                
-                
-                if event.type == pg.QUIT:
-                    raise StopGame("Player closed the window")
-                elif event.type == pg.MOUSEBUTTONUP:
-                    move = None
+            if event.type == pg.MOUSEBUTTONUP:
+                move = None
 
-                    try:
-                        position = pg.mouse.get_pos()
-                        position = ((position[0]-30)//60, (position[1]-30)//60)
-                        #print("position :", position)
-                        move = Move(gameState.currentPawn, position, gameState)
-                        
-                    except Exception as ex:
-                         print(str(ex))
+                try:
+                    position = pg.mouse.get_pos()
+                    position = ((position[0]-30)//60, (position[1]-30)//60)
+                    #print("position :", position)
+                    move = Move(gameState.currentPawn, position, gameState)
+                    
+                except Exception as ex:
+                    print(str(ex))
 
-                    return move
-                
+                return move
+            
 
                 
 
@@ -71,10 +67,11 @@ class IA(Player):
         for move in gameState.possibleMoves:
             utility = self.minValue(self.getResult(move), alpha, beta, depth - 1)
             if utility > bestUtility:
-
                 bestUtility = utility
                 bestMove = move
             alpha = max(alpha, bestUtility)
+            if alpha >= beta:
+                break  # coupure alpha-beta
         return bestMove
 
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
@@ -118,11 +115,10 @@ class IA(Player):
 
     def advanced_heuristic(self, state: GameState) -> float:
         mobility_weight = 0.5
-        stability_weight = 0.25
+        stability_weight = 0.4
         center_weight = 0.25
 
         current_pawn = state.currentPawn
-        other_pawn = current_pawn.other
 
         current_mobility = len(state.possibleMoves)
         other_mobility = 0
@@ -130,28 +126,8 @@ class IA(Player):
         if state.currentTurn+1 <= 60 :
             other_mobility = len(GameState(state.grid, state.currentTurn + 1,state.currentPawn.other).possibleMoves) 
 
-        current_stability = 0
-        other_stability = 0
-        stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
-        stable_positions += [(0, i) for i in range(1, 7)] + [(7, i) for i in range(1, 7)]
-        stable_positions += [(i, 0) for i in range(1, 7)] + [(i, 7) for i in range(1, 7)]
-        stable_positions += [(2, 2), (2, 5), (5, 2), (5, 5)]
 
-        current_center = 0
-        other_center = 0
-
-        for i in range(8):
-            for j in range(8):
-                if state.grid.cells[i, j] == current_pawn.value:
-                    if (i, j) in stable_positions:
-                        current_stability += 1
-                    if (2 <= i <= 5) and (2 <= j <= 5):
-                        current_center += 1
-                elif state.grid.cells[i, j] == other_pawn.value:
-                    if (i, j) in stable_positions:
-                        other_stability += 1
-                    if (2 <= i <= 5) and (2 <= j <= 5):
-                        other_center += 1
+        current_stability, other_stability, current_center, other_center = state.grid.compute_stability_and_center_scores()
                 
         score = (current_mobility - other_mobility) * mobility_weight
         score += (current_stability - other_stability) * stability_weight
