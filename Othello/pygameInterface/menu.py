@@ -30,7 +30,7 @@ def main() -> None:
                                                      manager=gui_manager)
     endGameDepthepthInput = pygame_gui.elements.UITextEntryLine(relative_rect=pg.Rect((50, 150), (300, 50)), 
                                                                 manager=gui_manager)
-    allowed = [str(i) for i in range(0, 20)]
+    allowed = ["0","1","2","3","4","5","6","7","8","9"]
     depthInput.set_allowed_characters(allowed_characters = allowed)
     endGameDepthepthInput.set_allowed_characters(allowed_characters = allowed)
 

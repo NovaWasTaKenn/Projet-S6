@@ -115,7 +115,7 @@ class IA(Player):
 
     def advanced_heuristic(self, state: GameState) -> float:
         mobility_weight = 0.5
-        stability_weight = 0.25
+        stability_weight = 0.4
         center_weight = 0.25
 
         current_pawn = state.currentPawn
