@@ -59,6 +59,7 @@ class Othello:
                     lastMove = player.makeMove(gameState)
 
                     if lastMove: afterState = lastMove.afterState
+                    else: afterState = False
                     
                     if afterState: 
                         gameState = afterState

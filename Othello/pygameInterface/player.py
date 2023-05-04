@@ -12,7 +12,10 @@ class PyGamePlayer(Player):
 
 
         for event in pg.event.get():
-            if event.type == pg.MOUSEBUTTONUP:
+            if event.type == pg.QUIT:
+                raise StopGame("Player closed the window")
+            
+            elif event.type == pg.MOUSEBUTTONUP:
                 move = None
 
                 try:
