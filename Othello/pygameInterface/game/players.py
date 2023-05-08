@@ -1,6 +1,7 @@
 
 
 import abc
+from typing import Tuple
 
 from logic.models import Pawn, Move, GameState
 from logic.validators import validatePlayerTurn

@@ -4,8 +4,14 @@ from game.renderers import Renderer
 from logic.models import GameState, Pawn, Move
 
 
+
 class PyGameRenderer(Renderer):
     
+    lastTurnBlack = 0.0
+    lastTurnWhite = 0.0
+    lastTurnMove = "Pas de coup précédent"
+    counter = 0
+
     def __init__(self):
         
         pg.init()
@@ -14,7 +20,8 @@ class PyGameRenderer(Renderer):
         self.background = pg.display.set_mode((750 ,540))
 
 
-    def Render(self, gameState : GameState, timeElapsed: float, move: Move) -> None:
+
+    def Render(self, gameState : GameState) -> None:
             pg.font.init()
 
 
@@ -35,12 +42,17 @@ class PyGameRenderer(Renderer):
             currentPlayer = self.font.render("Joueur actuel : noir" if gameState.currentPawn == Pawn.BLACK else "Joueur actuel : blanc", False, (0, 0, 0))
             self.background.blit(currentPlayer, (540 , 50))
 
-            timeElapsedTxt = self.font.render(f"Temps depuis dernier tour : \n{timeElapsed:5.4f} seconds", False, (0, 0, 0))
-            self.background.blit(timeElapsedTxt, (540 , 75))
+            timeElapsedWhite = self.font.render(f"Temps du dernier tour blanc: \n{PyGameRenderer.lastTurnWhite:5.4f} seconds", False, (0, 0, 0))
+            self.background.blit(timeElapsedWhite, (540, 75))
 
-            lastMoveTxt = self.font.render(f"Coup précedent : ({move.index[0]}, {move.index[1]})" if move != None else "Pas de coup précedent", False, (0, 0, 0))
-            self.background.blit(lastMoveTxt, (540 , 125))
+            timeElapsedBlack = self.font.render(f"Temps du dernier tour noir : \n{PyGameRenderer.lastTurnBlack:5.4f} seconds", False, (0, 0, 0))
+            self.background.blit(timeElapsedBlack, (540, 125))
 
+            lastMoveTxt = self.font.render(PyGameRenderer.lastTurnMove, False, (0, 0, 0))
+            self.background.blit(lastMoveTxt, (540 , 175))
+
+            possibleMove = [(state.index[0], state.index[1])
+                            for state in gameState.possibleMoves]
             for i in range(8):
                 for j in range(8):
                     a = int(gameState.grid.cells[i, j]) 
@@ -49,21 +61,28 @@ class PyGameRenderer(Renderer):
                     elif a == Pawn.WHITE.value : color = (255,255,255)
 
                     if a != 2:
-                        piece = Piece(color, (30 + 60*i +5, 30 + 60*j + 5))
+                        piece = Piece(color, (30 + 60*i +5, 30 + 60*j + 5),0)
                         self.background.blit(piece.surf, piece.rect)
+                    # Ajoute la couleur de la case si elle est jouable  
 
+                    
+                    if (i, j) in possibleMove:
+                        piece = Piece('red', (30 + 60*i + 5, 30 + 60*j + 5),5)
+                        self.background.blit(piece.surf, piece.rect)
+                        
             pg.display.flip()
 
 class  Piece(pg.sprite.Sprite):
-    def __init__(self, color, position):
+    def __init__(self, color, position,width):
         super(Piece, self).__init__()
 
         self.x = position[0]
         self.y = position[1]
+        self.width = width
 
         self.surf = pg.Surface((50,50))
         self.surf.fill((0,102,0))
-        pg.draw.circle(self.surf, color, (25,25), 20)
+        pg.draw.circle(self.surf, color, (25,25), 20, self.width)
         self.rect = self.surf.get_rect(topleft = (self.x, self.y))
 
 

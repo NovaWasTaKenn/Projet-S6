@@ -1,32 +1,29 @@
 import pygame as pg
+from game.utils import timer
 from game.players import Player
 from logic.models import *
 from logic.exceptions import *
-from game.engine import Othello, timer, debug
+import time
+from renderer import PyGameRenderer
 
 nbFeuilles = 0
 
 class PyGamePlayer(Player):
-    
-    def getMove(self, gameState: GameState) -> Move:
-
-
+    def getMove(self, gameState: GameState):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 raise StopGame("Player closed the window")
-            
+
             elif event.type == pg.MOUSEBUTTONUP:
                 move = None
 
                 try:
                     position = pg.mouse.get_pos()
                     position = ((position[0]-30)//60, (position[1]-30)//60)
-                    #print("position :", position)
                     move = Move(gameState.currentPawn, position, gameState)
-                    
+
                 except Exception as ex:
                     print(str(ex))
-
                 return move
             
 
@@ -44,7 +41,14 @@ class IA(Player):
 
         nbFeuilles = 0
 
+        start = time.perf_counter()
         rslt = self.alphaBetaSearch(gameState)
+        end = time.perf_counter()
+
+        if self.pawn.value == 0:
+            PyGameRenderer.lastTurnWhite = end - start
+        else:
+            PyGameRenderer.lastTurnBlack = end - start
 
         print()
         print(" ----> Nombre de feuilles parcouru : ", nbFeuilles)
@@ -137,3 +141,4 @@ class IA(Player):
         score += (current_center - other_center) * center_weight
 
         return score
+    
