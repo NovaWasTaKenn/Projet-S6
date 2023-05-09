@@ -1,23 +1,31 @@
 from dataclasses import dataclass
-from typing import Callable, TypeAlias
+# from typing import Callable, TypeAlias
 
 from game.players import Player
 from logic.models import *
 from logic.exceptions import *
 from game.renderers import Renderer
-from player import PyGamePlayer
+# from player import PyGamePlayer
 from renderer import PyGameRenderer
 import pygame as pg
 
 
 @dataclass(frozen=True)
 class Othello:
+    """
+    Classe Othello comprenant l'initialisation du board, du 1° tour du jeu, les coups possibles,
+    la fin du jeu et la fermeture de la fenêtre
+    """
     player1: Player
     player2: Player
     renderer: Renderer
 
     
-    def play(self) -> None:
+    def play(self) -> bool:
+        """
+        Initialise le 1° tour d'Othello avec deux pions noirs placés en [3,3] 
+        et [4,4] et deux pions blancs placés en [3,4] et [4,3]
+        """
         game = True
         while game:
             cells = np.full((8, 8), 2)
@@ -31,7 +39,7 @@ class Othello:
             start = 0
             lastMove = None
         #print("GameState created")
-            while (gameState.currentTurn <= 60
+            while (gameState.currentTurn <= 61
                 and not gameState.gameStage == GameStage.blackWin
                 and not gameState.gameStage == GameStage.whiteWin
                 and not gameState.gameStage == GameStage.tie):
@@ -93,8 +101,18 @@ class Othello:
             if(gameState.gameStage == GameStage.tie):
                 print("tie")
 
-            game = input()
-            game = False
+            self.renderer.Render(gameState)
+            game = input("Appuyez sur entrée pour rejouer ou sur n'importe quelle touche pour quitter")
+            if game == "":
+                game = True
+            else:
+                game = False
+        result = input("Appuyez sur espace pour quitter ou sur n'importe quelle touche pour rejouer")
+        if result == "":
+            return False
+        else:
+            return True
 
     def getCurrentPlayer(self, gameState: GameState) -> Player:
+        """Retourne la classe Player à qui c'est le tour de jouer"""
         return self.player1 if self.player1.pawn == gameState.currentPawn else self.player2

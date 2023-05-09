@@ -8,15 +8,18 @@ from logic import settings
 from typing import Tuple
 
 class Pawn(enum.Enum):
+    """Classe comportant les différentes couleurs du pion (noir,blanc)"""
     BLACK = 1
     WHITE = 0
     
     @cached_property
     def other(self) -> Pawn:
+        """Change de couleur de pion à chaque tour"""
         return Pawn.BLACK if self is Pawn.WHITE else Pawn.WHITE
     
 @dataclass(frozen=True)
 class Grid:
+    """Classe créant le board de jeu"""
     cells: np.array
 
     def __post_init__(self):
@@ -25,17 +28,19 @@ class Grid:
 
     @cached_property
     def counts(self) -> dict:
+        """Retourne le nombre de pions noirs et blancs présents sur le board"""
         uniques = np.unique(self.cells, return_counts=True)
         return dict(zip(uniques[0], uniques[1]))
     
     def compute_stability_and_center_scores(self) -> Tuple[np.array, np.array]:
+
         """
-        Computes the stability and center scores for each pawn type in the grid.
-        Returns a tuple of two numpy arrays: the first contains the stability score for each pawn type,
-        and the second contains the center score for each pawn type.
+        Calcul les scores de stabilité et de centre pour chaque type de pion dans la grille.
+        Retourne un tuple de deux tableaux numpy: le premier contient le score de stabilité pour chaque type de pion,
+        et le second contient le score de centre pour chaque type de pion.
         """
 
-        # Define the stability matrix
+        # Définit la matrice de stabilité
         stability_matrix = np.array([
             [20, -3, 11, 8, 8, 11, -3, 20],
             [-3, -7, -4, 1, 1, -4, -7, -3],
@@ -47,7 +52,7 @@ class Grid:
             [20, -3, 11, 8, 8, 11, -3, 20]
         ])
 
-        # Define the center matrix
+        # Définit la matrice de centre
         center_matrix = np.zeros((8, 8))
         center_matrix[2:6, 2:6] = np.array([
             [0, 0, 0, 0],
@@ -56,7 +61,7 @@ class Grid:
             [0, 0, 0, 0]
         ])
 
-        # Compute the stability and center scores for each pawn type
+        # Calcul les scores de stabilité et de centre pour chaque type de pion
         current_stability = np.sum(stability_matrix * (self.cells == 1))
         other_stability = np.sum(stability_matrix * (self.cells == 2))
         current_center = np.sum(center_matrix * (self.cells == 1))
@@ -67,6 +72,7 @@ class Grid:
 
 @dataclass(frozen=True)
 class Move:
+    """Classe comportant le pion, l'index choisi par le joueur, et Gamestate"""
     pawn: Pawn
     index: tuple[int, int]
     beforeState: GameState
@@ -76,6 +82,7 @@ class Move:
 
     @cached_property
     def afterState(self) -> GameState:
+        """edéfinit le board en fonction du coup sélectionné par le joueur et du sandwich créee"""
         cells = np.copy(self.beforeState.grid.cells)
         cells[self.index[0], self.index[1]] = self.pawn.value    
 
@@ -105,11 +112,10 @@ class Move:
 
     @cached_property
     def sandwiches(self) -> list:
+        """Retourne une liste des positions encerclées par le coup choisi (sandwich)"""
         sandwiches = []
         difs = [(0, -1), (0, 1), (-1, 0), (1, 0),
                 (-1, -1), (1, 1), (1, -1), (-1, 1)]
-
-        
 
         for dif in difs:
 
@@ -143,6 +149,7 @@ class Move:
 
 
 class GameStage(enum.Enum):
+    """Classe représentant les différents états du jeu (non commencé,début,milieu,fin,égalité ou gagnant)"""
     gameNotStarted = 0
     earlyGame = 1
     midGame = 2
@@ -154,6 +161,7 @@ class GameStage(enum.Enum):
 #Dataclass auto implements __init__, __repr__, __eq__ and order functions : __ge__, __le__, ...
 @dataclass(frozen=True)
 class GameState(object):
+    """Classe retournant la Classe GameStage en fonction du board, du tour et du joueur actuel"""
     grid: Grid
     currentTurn: int
     currentPawn: Pawn
@@ -161,7 +169,7 @@ class GameState(object):
     #Possiblement plus intéressant de séparer en plusieurs propriétés
     @cached_property
     def gameStage(self) -> GameStage:
-
+        """Retournes le GameStage en fonction du board, du tour et du joueur actuel"""
         otherPossibleMoves = GameState(self.grid, self.currentTurn, self.currentPawn.other).possibleMoves
 
         if self.currentTurn == 1 and self.possibleMoves != [] or otherPossibleMoves != []: return GameStage.gameNotStarted
@@ -175,6 +183,7 @@ class GameState(object):
     
     @cached_property
     def possibleMoves(self):
+        """retourne le coup s'il est valide en fonction de la taille du board, des positions des différents pions """
         otherPawn = self.currentPawn.other
         otherPawns = np.where(self.grid.cells==otherPawn.value)
         #print("otherPawns : ",otherPawns)
@@ -202,6 +211,7 @@ class GameState(object):
     
     @cached_property
     def stablePositions(self):
+        """retourne l'ensemble des positions stables qui sont à prioriser pour faciliter la victoire"""
         stable_positions = [(0, 0), (0, 7), (7, 0), (7, 7)]
         stable_positions += [(0, i) for i in range(1, 7)] + \
             [(7, i) for i in range(1, 7)]

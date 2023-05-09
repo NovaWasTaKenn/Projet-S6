@@ -6,7 +6,7 @@ from logic.models import GameState, Pawn, Move
 
 
 class PyGameRenderer(Renderer):
-    
+    """Permet le rendu du jeu Othello"""
     lastTurnBlack = 0
     lastTurnWhite = 0
     lastTurnMove = "Pas de coup précédent"
@@ -25,6 +25,7 @@ class PyGameRenderer(Renderer):
 
 
     def Render(self, gameState : GameState) -> None:
+            """Fonction qui permet de rendre le jeu Othello dans la fenêtre pygame"""
             pg.font.init()
 
             self.background.fill("grey")
@@ -55,8 +56,7 @@ class PyGameRenderer(Renderer):
 
             if self.prediction: possibleMove= [(state.index[0], state.index[1]) for state in gameState.possibleMoves]
             
-            PyGameRenderer.blackPieces = 0
-            PyGameRenderer.whitePieces = 0
+            PyGameRenderer.blackPieces, PyGameRenderer.whitePieces = gameState.grid.counts[1],gameState.grid.counts[0]
 
 
             for i in range(8):
@@ -70,10 +70,6 @@ class PyGameRenderer(Renderer):
                         
 
                     if a != 2:
-                        if a == 0:
-                            PyGameRenderer.blackPieces += 1 
-                        else:
-                            PyGameRenderer.whitePieces += 1
                         piece = Piece(color, (30 + 60*i +5, 30 + 60*j + 5),0)
                         self.background.blit(piece.surf, piece.rect)
                     # Ajoute la couleur de la case si elle est jouable  
@@ -98,6 +94,7 @@ class PyGameRenderer(Renderer):
             pg.display.flip()
 
 class  Piece(pg.sprite.Sprite):
+    """Permet de créer un pion de jeu Othello dans la fenêtre pygame"""
     def __init__(self, color, position,width):
         super(Piece, self).__init__()
 

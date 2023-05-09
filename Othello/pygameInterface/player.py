@@ -1,5 +1,5 @@
 import pygame as pg
-from game.utils import timer
+# from game.utils import timer
 from game.players import Player
 from logic.models import *
 from logic.exceptions import *
@@ -9,6 +9,7 @@ from renderer import PyGameRenderer
 nbFeuilles = 0
 
 class PyGamePlayer(Player):
+    """Retourne le coup en fonction des positions du clic du joueur"""
     def getMove(self, gameState: GameState):
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -31,7 +32,7 @@ class PyGamePlayer(Player):
 
 class IA(Player):
     
-
+    """Retourne le coup en fonction de l'algorithme MinMax avec élagage Alpha-Bêta"""
     def getMove(self, gameState: GameState) -> Move:
         # Implémente l'algorithme Minimax avec élagage Alpha-Bêta
 
@@ -57,8 +58,9 @@ class IA(Player):
         return rslt
     
     def alphaBetaSearch(self, gameState: GameState) -> Move:
-        # Détermine la profondeur maximale de recherche
+        """Effectue un élagage alpha-bêta sur l'état du plateau et retourne le meilleur coup"""
 
+        # Détermine la profondeur maximale de recherche
         depth = settings.depth if gameState.gameStage != GameStage.endGame else settings.endGameDepth
 
         #print()
@@ -82,6 +84,7 @@ class IA(Player):
         return bestMove
 
     def maxValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
+        """Evalue le meilleur coup pour le joueur MAX"""
 
         global nbFeuilles
 
@@ -100,6 +103,7 @@ class IA(Player):
         return v
 
     def minValue(self, gameState: GameState, alpha: float, beta: float, depth: int) -> float:
+        """Evalue le meilleur coup pour le joueur MIN"""
 
         global nbFeuilles
 
@@ -118,9 +122,11 @@ class IA(Player):
         return v
 
     def getResult(self,  move: Move) -> GameState:
+        """Retourne l'état du plateau après avoir joué le coup"""
         return move.afterState
 
     def advanced_heuristic(self, state: GameState) -> float:
+        """Retourne une évaluation de l'état du plateau"""
         mobility_weight = 0.5
         stability_weight = 0.4
         center_weight = 0.25

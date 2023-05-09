@@ -5,15 +5,14 @@ from player import PyGamePlayer, IA
 from logic.models import Pawn
 from logic import settings
 import pygame as pg
-from logic.exceptions import StopGame 
+# from logic.exceptions import StopGame 
 import pygame_gui
 import re
 
 def main() -> None:
+    """Affiche le menu de l'interface graphique permettant de les joueurs et de lancer la partie"""
     #Othello(PyGamePlayer(Pawn.WHITE), PyGamePlayer(Pawn.BLACK), PyGameRenderer()).play()
     #Othello(PyGamePlayer(Pawn.WHITE), IA(Pawn.BLACK, 3, 7), PyGameRenderer()).play()
-
-   
 
     pg.init()
 
@@ -25,16 +24,16 @@ def main() -> None:
     # Set up the Pygame GUI manager
     gui_manager = pygame_gui.UIManager(WINDOW_SIZE)
 
-    # Set up the text inputs
+    # Mise en place des textes
     depthInput = pygame_gui.elements.UITextEntryLine(relative_rect=pg.Rect((50, 50), (300, 50)), 
-                                                     manager=gui_manager)
+                                                     manager=gui_manager,initial_text="4")
     endGameDepthepthInput = pygame_gui.elements.UITextEntryLine(relative_rect=pg.Rect((50, 150), (300, 50)), 
-                                                                manager=gui_manager)
-    allowed = ["0","1","2","3","4","5","6","7","8","9"]
-    depthInput.set_allowed_characters(allowed_characters = allowed)
-    endGameDepthepthInput.set_allowed_characters(allowed_characters = allowed)
+                                                                manager=gui_manager,initial_text="8")
+    
+    depthInput.set_allowed_characters(allowed_characters = 'numbers')
+    endGameDepthepthInput.set_allowed_characters(allowed_characters='numbers')
 
-    # Set up the dropdown inputs
+    # Mise en place des drop down menus
     whiteItems = ["IA", "Humain"]
     whiteDropDown = pygame_gui.elements.UIDropDownMenu(options_list=whiteItems,
                                                    starting_option=whiteItems[0],
@@ -72,10 +71,11 @@ def main() -> None:
 
         gui_manager.draw_ui(window_surface)
         
+        # Vérification des inputs
         if confirmed: 
             if depthInput.get_text() == '' or endGameDepthepthInput.get_text() == '':
                 confirmed = False 
-            elif int(depthInput.get_text()) > 9 or int(endGameDepthepthInput.get_text()) > 9 :
+            elif int(depthInput.get_text()) < 0 or int(endGameDepthepthInput.get_text()) < 0 :
                 confirmed = False
 
         pg.display.update()
@@ -89,14 +89,19 @@ def main() -> None:
         whiteSelection = whiteDropDown.selected_option
         blackSelection = blackDropDown.selected_option
 
+        # Création des joueurs
         if whiteSelection == "Humain" : white = PyGamePlayer(Pawn.WHITE)
         else: white = IA(Pawn.WHITE)
 
         if blackSelection == "Humain" : black = PyGamePlayer(Pawn.BLACK)
         else: black = IA(Pawn.BLACK)
 
-    pg.quit()
+   
     prediction = isinstance(white, PyGamePlayer) or isinstance(black,PyGamePlayer)
-    if confirmed: Othello(white, black, PyGameRenderer(prediction)).play()
+    if confirmed: 
+        rslt = Othello(white, black, PyGameRenderer(prediction)).play()
+    pg.quit()
 
+    if rslt:
+        main()
     

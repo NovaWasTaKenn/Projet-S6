@@ -1,9 +1,10 @@
 import time
 import functools
-from typing import Tuple
+# from typing import Tuple
 
 
 def timer(fonction):
+    """Sert à chronométrer une action donnée"""
     @functools.wraps(fonction)
     def wrap(*param, **param2):
         start = time.perf_counter()
