@@ -34,16 +34,22 @@ def main() -> None:
     endGameDepthepthInput.set_allowed_characters(allowed_characters='numbers')
 
     # Mise en place des drop down menus
+
+    blackItems = ["IA", "Humain"]
+    pygame_gui.elements.UILabel(relative_rect=pg.Rect((50, 300), (300, 50)), text="Joueur noir", manager=gui_manager)
+    blackDropDown = pygame_gui.elements.UIDropDownMenu(options_list=blackItems,
+                                                       starting_option=blackItems[0],
+                                                       relative_rect=pg.Rect(
+                                                           (50, 350), (300, 50)),
+                                                       manager=gui_manager)
+
     whiteItems = ["IA", "Humain"]
+    pygame_gui.elements.UILabel(relative_rect=pg.Rect((50, 200), (300, 50)), text="Joueur blanc", manager=gui_manager)
     whiteDropDown = pygame_gui.elements.UIDropDownMenu(options_list=whiteItems,
                                                    starting_option=whiteItems[0],
                                                    relative_rect=pg.Rect((50, 250), (300, 50)),
                                                    manager=gui_manager)
-    blackItems = ["IA", "Humain"]
-    blackDropDown = pygame_gui.elements.UIDropDownMenu(options_list=blackItems,
-                                                   starting_option=blackItems[0],
-                                                   relative_rect=pg.Rect((50, 350), (300, 50)),
-                                                   manager=gui_manager)
+   
     
     confirmButton = pygame_gui.elements.UIButton(relative_rect=pg.Rect((150, 450), (100, 50)),
                                              text='Confirmer',
