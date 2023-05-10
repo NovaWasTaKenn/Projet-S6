@@ -97,9 +97,9 @@ def main() -> None:
         else: black = IA(Pawn.BLACK)
 
    
-    prediction = isinstance(white, PyGamePlayer) or isinstance(black,PyGamePlayer)
+    #prediction = isinstance(white, PyGamePlayer) or isinstance(black,PyGamePlayer)
     if confirmed: 
-        rslt = Othello(white, black, PyGameRenderer(prediction)).play()
+        rslt = Othello(white, black, PyGameRenderer()).play()
     pg.quit()
 
     if rslt:

@@ -48,8 +48,10 @@ class IA(Player):
 
         if self.pawn.value == 0:
             PyGameRenderer.lastTurnWhite = end - start
+            PyGameRenderer.totalWhite += PyGameRenderer.lastTurnWhite
         else:
             PyGameRenderer.lastTurnBlack = end - start
+            PyGameRenderer.totalBlack += PyGameRenderer.lastTurnBlack
 
         print()
         print(" ----> Nombre de feuilles parcouru : ", nbFeuilles)

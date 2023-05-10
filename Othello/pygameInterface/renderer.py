@@ -13,6 +13,8 @@ class PyGameRenderer(Renderer):
     counter = 0
     blackPieces = 0
     whitePieces = 0
+    totalWhite = 0
+    totalBlack = 0
 
     def __init__(self,prediction = False):
         
@@ -45,14 +47,20 @@ class PyGameRenderer(Renderer):
             currentPlayer = self.font.render("Joueur actuel : noir" if gameState.currentPawn == Pawn.BLACK else "Joueur actuel : blanc", False, (0, 0, 0))
             self.background.blit(currentPlayer, (540 , 50))
 
-            timeElapsedWhite = self.font.render(f"Temps du dernier tour blanc: \n{PyGameRenderer.lastTurnWhite:5.4f} seconds", False, (0, 0, 0))
+            timeElapsedWhite = self.font.render(f"Temps du dernier tour blanc: \n{PyGameRenderer.lastTurnWhite:5.4f} secondes", False, (0, 0, 0))
             self.background.blit(timeElapsedWhite, (540, 75))
 
-            timeElapsedBlack = self.font.render(f"Temps du dernier tour noir : \n{PyGameRenderer.lastTurnBlack:5.4f} seconds", False, (0, 0, 0))
+            timeElapsedBlack = self.font.render(f"Temps du dernier tour noir : \n{PyGameRenderer.lastTurnBlack:5.4f} secondes", False, (0, 0, 0))
             self.background.blit(timeElapsedBlack, (540, 125))
 
             lastMoveTxt = self.font.render(PyGameRenderer.lastTurnMove, False, (0, 0, 0))
             self.background.blit(lastMoveTxt, (540 , 175))
+
+            totalTimeBlack = self.font.render(f"Temps total noir :\n{PyGameRenderer.totalBlack:5.4f} secondes", False, (0, 0, 0))
+            self.background.blit(totalTimeBlack, (540, 350))
+
+            totalTimeWhite = self.font.render(f"Temps total blanc : \n{PyGameRenderer.totalWhite:5.4f} secondes", False, (0, 0, 0))
+            self.background.blit(totalTimeWhite, (540, 390))
 
             if self.prediction: possibleMove= [(state.index[0], state.index[1]) for state in gameState.possibleMoves]
             

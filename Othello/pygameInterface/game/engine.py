@@ -102,6 +102,8 @@ class Othello:
                 print("tie")
 
             self.renderer.Render(gameState)
+            print("Total Black : "+str(PyGameRenderer.totalBlack))
+            print("Total White : "+str(PyGameRenderer.totalWhite))
             game = input("Appuyez sur entrée pour rejouer ou sur n'importe quelle touche pour quitter")
             if game == "":
                 game = True
